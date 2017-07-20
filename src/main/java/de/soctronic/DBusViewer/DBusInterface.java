@@ -1,10 +1,9 @@
 package de.soctronic.DBusViewer;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class DBusInterface {
-
-	private String objectPath;
 
 	private DBusNode node;
 
@@ -12,10 +11,18 @@ public class DBusInterface {
 	private Map<String, DBusProperty> properties;
 	private Map<String, DBusSignal> signals;
 
-	public DBusInterface(String name, String objectPath, DBusNode node, Map<String, DBusMethod> methods,
+	public DBusInterface(String name, DBusNode node) {
+		this.name = name;
+		this.node = node;
+		
+		this.methods = new HashMap<String, DBusMethod>();
+		this.properties = new HashMap<String, DBusProperty>();
+		this.signals = new HashMap<String, DBusSignal>();
+	}
+	
+	public DBusInterface(String name, DBusNode node, Map<String, DBusMethod> methods,
 			Map<String, DBusProperty> properties, Map<String, DBusSignal> signals) {
 		this.name = name;
-		this.objectPath = objectPath;
 
 		this.node = node;
 
@@ -28,10 +35,6 @@ public class DBusInterface {
 
 	public String getName() {
 		return name;
-	}
-
-	public String getObjectPath() {
-		return objectPath;
 	}
 
 	public DBusNode getNode() {
@@ -48,5 +51,17 @@ public class DBusInterface {
 
 	public Map<String, DBusSignal> getSignals() {
 		return signals;
+	}
+	
+	public void addMethod(DBusMethod method) {
+		this.methods.put(method.getName(), method);
+	}
+	
+	public void addProperty(DBusProperty property) {
+		this.properties.put(property.getName(), property);
+	}
+	
+	public void addSignal(DBusSignal signal) {
+		this.signals.put(signal.getName(), signal);
 	}
 }

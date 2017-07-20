@@ -6,15 +6,20 @@ import java.util.Map;
 public class DBusNode {
 	private String objectPath;
 	private Map<String, DBusInterface> interfaces;
+	private Map<String, DBusNode> nodes;
 	
 	public DBusNode(String objectPath ) {
 		this.objectPath = objectPath;
 		this.interfaces = new HashMap<String, DBusInterface>();
+		this.nodes = new HashMap<String, DBusNode>();
+		
+		System.out.println("created new node[" + objectPath + "]");
 	}
 	
-	public DBusNode(String objectPath, Map<String, DBusInterface> interfaces) {
+	public DBusNode(String objectPath, Map<String, DBusInterface> interfaces, Map<String, DBusNode> nodes) {
 		this.objectPath = objectPath;
 		this.interfaces = interfaces;
+		this.nodes = nodes;
 	}
 
 	public String getObjectPath() {
@@ -23,5 +28,17 @@ public class DBusNode {
 
 	public Map<String, DBusInterface> getInterfaces() {
 		return interfaces;
+	}
+	
+	public Map<String, DBusNode> getNodes() {
+		return nodes;
+	}
+	
+	public void addInterface(DBusInterface iface) {
+		this.interfaces.put(iface.getName(), iface);
+	}
+	
+	public void addNode(DBusNode node) {
+		this.nodes.put(node.getObjectPath(), node);
 	}
 }

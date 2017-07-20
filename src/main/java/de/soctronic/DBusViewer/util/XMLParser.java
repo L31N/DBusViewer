@@ -19,35 +19,22 @@ import org.xml.sax.SAXException;
 
 public class XMLParser {
 
-	public XMLParser() {
+	private Document document;
 
-	}
-
-	public List<String> getNodes(String xmlInputString) {
-		List<String> strNodes = new ArrayList<String>();
-		
-		System.out.print(xmlInputString);
-		
+	public XMLParser(String xmlInputString) {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			factory.setValidating(false);
 			factory.setNamespaceAware(true);
 			factory.setFeature("http://xml.org/sax/features/namespaces", false);
-			factory.setFeature("http://xml.org/sax/features/validation", false);			
+			factory.setFeature("http://xml.org/sax/features/validation", false);
 			factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
 			factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-			
+
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			
-			ByteArrayInputStream input =  new ByteArrayInputStream(xmlInputString.getBytes("UTF-8"));
-			Document document = builder.parse(input);
-			
-			NodeList nodeList = document.getElementsByTagName("node");
-			System.out.println(nodeList.toString());
-			for (int i = 1; i < nodeList.getLength(); i++) {
-				Element element = (Element) nodeList.item(i);
-				strNodes.add(element.getAttribute("name"));
-			}
+
+			ByteArrayInputStream input = new ByteArrayInputStream(xmlInputString.getBytes("UTF-8"));
+			document = builder.parse(input);
 		} catch (ParserConfigurationException ex) {
 			System.err.println("could not configure xml parser: " + ex.getMessage());
 			ex.printStackTrace();
@@ -58,7 +45,28 @@ public class XMLParser {
 			System.err.println("could not parse xml: " + ex.getMessage());
 			ex.printStackTrace();
 		}
-		
+	}
+
+	public List<String> getNodes() {
+		List<String> strNodes = new ArrayList<String>();
+
+		NodeList nodeList = document.getElementsByTagName("node");
+		for (int i = 1; i < nodeList.getLength(); i++) {
+			Element element = (Element) nodeList.item(i);
+			strNodes.add(element.getAttribute("name"));
+		}
 		return strNodes;
+	}
+
+	public List<String> getInterfaces() {
+		List<String> ifaces = new ArrayList<String>();
+		
+		NodeList nodeList = document.getElementsByTagName("interface");
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Element element = (Element) nodeList.item(i);
+			ifaces.add(element.getAttribute("name"));
+		}
+		
+		return ifaces;
 	}
 }

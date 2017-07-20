@@ -3,8 +3,6 @@ package de.soctronic.DBusViewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.modelmbean.XMLParseException;
-
 import org.freedesktop.DBus.Introspectable;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -41,28 +39,46 @@ public class DBusExplorer {
 		System.out.println("discovering tree for bus[" + busname + "]");
 		DBusTree dbusTree = new DBusTree(busname);
 
+		// recursive procedure
+		dbusTree.addNode(discoverNode(busname, "/"));
+
+		return dbusTree;
+
+	}
+
+	private DBusNode discoverNode(String busname, String objectPath) {
+		List<String> ifaces = new ArrayList<String>();
+		List<String> childs = new ArrayList<String>();
 		try {
-			Introspectable introspectable = (Introspectable) dbusConnection.getRemoteObject(busname, "/", Introspectable.class);
+			Introspectable introspectable = (Introspectable) dbusConnection.getRemoteObject(busname, objectPath,
+					Introspectable.class);
 			String introspectionResult = introspectable.Introspect();
-			XMLParser xmlParser = new XMLParser();
-			List<String> nodes = xmlParser.getNodes(introspectionResult);
-			
-			dbusTree.addNode(discoverNode("/"));
-			
-			for (String objectPath : nodes) {
-				dbusTree.addNode(discoverNode(objectPath));
-			}
-			
+			XMLParser xmlParser = new XMLParser(introspectionResult);
+			ifaces = xmlParser.getInterfaces();
+			childs = xmlParser.getNodes();
 		} catch (DBusException ex) {
-			System.err.println("could not introspect[" + busname + "]: " + ex.getMessage());
+			System.err.println("could not call introspection on [" + objectPath + "]: " + ex.getMessage());
 			ex.printStackTrace();
 		}
 
-		return dbusTree;
+		DBusNode node = new DBusNode(objectPath);
+		for (String iface : ifaces) {
+			System.out.println("new Interface discovered[" + iface + "]");
+			node.addInterface(discoverInterface(busname, iface, node));
+		}
+
+		for (String child : childs) {
+			String path = objectPath + "/" + child;
+			path = path.replaceAll("//", "/");
+			node.addNode(discoverNode(busname, path));
+		}
+
+		return node;
 	}
 	
-	private DBusNode discoverNode(String objectPath) {
-		return null;
+	private DBusInterface discoverInterface(String busname, String name, DBusNode node) {
 		
+		
+		return null;
 	}
 }
