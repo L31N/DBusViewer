@@ -14,13 +14,14 @@ import de.soctronic.DBusViewer.lanterna.MainWindow;
 
 public class DBusViewerGUI {
 
+	private Screen screen;
 	private WindowBasedTextGUI gui;
 	private MainWindow mainWindow;
 
 	public DBusViewerGUI() {
 		try {
 			Terminal term = new DefaultTerminalFactory().createTerminal();
-			Screen screen = new TerminalScreen(term);
+			screen = new TerminalScreen(term);
 			gui = new MultiWindowTextGUI(screen);
 			screen.startScreen();
 		} catch (IOException ex) {
@@ -29,8 +30,18 @@ public class DBusViewerGUI {
 		}
 	}
 
-	public void displayBusNames(List<String> busnames) {
-		mainWindow = new MainWindow(busnames);
+	public void show() {
+		mainWindow = new MainWindow();
 		gui.addWindowAndWait(mainWindow);
+		close();
+	}
+
+	public void close() {
+		try {
+			screen.stopScreen();
+		} catch(IOException ex) {
+			System.err.println("could not stop screen: " + ex.getMessage());
+			ex.printStackTrace();
+		}
 	}
 }
