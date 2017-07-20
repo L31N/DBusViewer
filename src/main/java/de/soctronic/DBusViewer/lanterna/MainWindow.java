@@ -16,6 +16,7 @@ import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.table.Table;
 
 import de.soctronic.DBusViewer.DBusExplorer;
+import de.soctronic.DBusViewer.DBusTree;
 
 public class MainWindow extends BasicWindow {
 
@@ -55,12 +56,7 @@ public class MainWindow extends BasicWindow {
 			table.getTableModel().addRow(name);
 		}
 
-		table.setSelectAction(new Runnable() {
-			public void run() {
-				List<String> data = table.getTableModel().getRow(table.getSelectedRow());
-				System.out.println(data.get(0));
-			}
-		});
+		table.setSelectAction(new BusnameSelectHandler(this, table));
 
 		tablePanel.addComponent(table);
 
@@ -71,9 +67,11 @@ public class MainWindow extends BasicWindow {
 	}
 
 	public void onBusnameSelect(String busname) {
-		dbusExplorer.discoverTree(busname);
-		displayTree();
+		DBusTree dbusTree = dbusExplorer.discoverTree(busname);
+		displayTree(dbusTree);
 	}
 	
-	private void displayTree() {}
+	private void displayTree(DBusTree dbusTree) {
+		
+	}
 }

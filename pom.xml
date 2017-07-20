@@ -23,6 +23,13 @@
 			<artifactId>lanterna</artifactId>
 			<version>3.0.0-rc1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.xml.parsers/jaxp-api -->
+		<dependency>
+			<groupId>javax.xml.parsers</groupId>
+			<artifactId>jaxp-api</artifactId>
+			<version>1.4.5</version>
+		</dependency>
+
 
 
 	</dependencies>
