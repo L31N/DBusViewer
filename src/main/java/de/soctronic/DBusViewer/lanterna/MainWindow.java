@@ -21,11 +21,6 @@ public class MainWindow extends BasicWindow {
 
 	private DBusExplorer dbusExplorer;
 
-	// private Table<String> table;
-	// private Panel mainPanel;
-	// private Panel tablePanel;
-	// private Button exitButton;
-
 	public MainWindow() {
 		super("DBusViewer 1.0.0-SNAPSHOT");
 
@@ -74,4 +69,11 @@ public class MainWindow extends BasicWindow {
 
 		this.setComponent(mainPanel);
 	}
+
+	public void onBusnameSelect(String busname) {
+		dbusExplorer.discoverTree(busname);
+		displayTree();
+	}
+	
+	private void displayTree() {}
 }

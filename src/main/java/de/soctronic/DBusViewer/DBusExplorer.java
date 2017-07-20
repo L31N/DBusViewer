@@ -32,4 +32,8 @@ public class DBusExplorer {
 
 		return nameList;
 	}
+	
+	public DBusTree discoverTree(String busname) {
+		return null;
+	}
 }
