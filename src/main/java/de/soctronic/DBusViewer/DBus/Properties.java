@@ -14,7 +14,7 @@
  * the License.
  */
 
-package de.soctronic.DBusViwer.bluez;
+package de.soctronic.DBusViewer.DBus;
 
 import java.util.List;
 import java.util.Map;

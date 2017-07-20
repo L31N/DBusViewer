@@ -1,4 +1,4 @@
-package de.soctronic.DBusViwer.bluez;
+package de.soctronic.DBusViewer.DBus;
 
 /*
  * Copyright (C) 2016 Keith M. Hughes
