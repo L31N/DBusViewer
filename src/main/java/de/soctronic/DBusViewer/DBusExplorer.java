@@ -49,21 +49,14 @@ public class DBusExplorer {
 	private DBusNode discoverNode(String busname, String objectPath) {
 		List<String> ifaces = new ArrayList<String>();
 		List<String> childs = new ArrayList<String>();
-		try {
-			Introspectable introspectable = (Introspectable) dbusConnection.getRemoteObject(busname, objectPath,
-					Introspectable.class);
-			String introspectionResult = introspectable.Introspect();
-			XMLParser xmlParser = new XMLParser(introspectionResult);
-			ifaces = xmlParser.getInterfaces();
-			childs = xmlParser.getNodes();
-		} catch (DBusException ex) {
-			System.err.println("could not call introspection on [" + objectPath + "]: " + ex.getMessage());
-			ex.printStackTrace();
-		}
+
+		String introspectionResult = introspect(busname, objectPath);
+		XMLParser xmlParser = new XMLParser(introspectionResult);
+		ifaces = xmlParser.getInterfaces();
+		childs = xmlParser.getNodes();
 
 		DBusNode node = new DBusNode(objectPath);
 		for (String iface : ifaces) {
-			System.out.println("new Interface discovered[" + iface + "]");
 			node.addInterface(discoverInterface(busname, iface, node));
 		}
 
@@ -76,9 +69,38 @@ public class DBusExplorer {
 		return node;
 	}
 	
-	private DBusInterface discoverInterface(String busname, String name, DBusNode node) {
+	private DBusInterface discoverInterface(String busname, String iface, DBusNode node) {
 		
+		DBusInterface dbusInterface = new DBusInterface(iface, node);
 		
-		return null;
+		String introspectionResult = introspect(busname, node.getObjectPath());
+		XMLParser xmlParser = new XMLParser(introspectionResult);
+		List<DBusMethod> methods = xmlParser.getMethods(iface, dbusInterface);
+		//List<DBusSignal> signals = xmlParser.getSignals(iface, dbusInterface);
+		//List<DBusProperty> properties= xmlParser.getProperties(iface, dbusInterface);
+		
+		for (DBusMethod method : methods) {
+			dbusInterface.addMethod(method);
+		}
+//		for (String signal : signals) {
+//			dbusInterface.addSignal(new DBusSignal(signal, dbusInterface));
+//		}
+//		for (String property : properties) {
+//			dbusInterface.addProperty(new DBusProperty(property, null, null, dbusInterface));
+//		}
+		
+		return dbusInterface;
+	}
+
+	private String introspect(String busname, String objectPath) {
+		try {
+			Introspectable introspectable = (Introspectable) dbusConnection.getRemoteObject(busname, objectPath,
+					Introspectable.class);
+			return introspectable.Introspect();
+		} catch (DBusException ex) {
+			System.err.println("could not call introspection on [" + objectPath + "]: " + ex.getMessage());
+			ex.printStackTrace();
+			return new String();
+		}
 	}
 }
