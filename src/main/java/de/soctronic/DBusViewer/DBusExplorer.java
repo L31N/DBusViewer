@@ -76,18 +76,18 @@ public class DBusExplorer {
 		String introspectionResult = introspect(busname, node.getObjectPath());
 		XMLParser xmlParser = new XMLParser(introspectionResult);
 		List<DBusMethod> methods = xmlParser.getMethods(iface, dbusInterface);
-		//List<DBusSignal> signals = xmlParser.getSignals(iface, dbusInterface);
-		//List<DBusProperty> properties= xmlParser.getProperties(iface, dbusInterface);
+		List<DBusSignal> signals = xmlParser.getSignals(iface, dbusInterface);
+		List<DBusProperty> properties= xmlParser.getProperties(iface, dbusInterface);
 		
 		for (DBusMethod method : methods) {
 			dbusInterface.addMethod(method);
 		}
-//		for (String signal : signals) {
-//			dbusInterface.addSignal(new DBusSignal(signal, dbusInterface));
-//		}
-//		for (String property : properties) {
-//			dbusInterface.addProperty(new DBusProperty(property, null, null, dbusInterface));
-//		}
+		for (DBusSignal signal : signals) {
+			dbusInterface.addSignal(signal);
+		}
+		for (DBusProperty property : properties) {
+			dbusInterface.addProperty(property);
+		}
 		
 		return dbusInterface;
 	}

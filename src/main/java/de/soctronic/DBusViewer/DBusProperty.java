@@ -1,23 +1,21 @@
 package de.soctronic.DBusViewer;
 
-import org.freedesktop.dbus.Variant;
-
 public class DBusProperty {
 	private String name;
-	private Variant value;
+	private String type;
 	private Permission permission;
 	
 	private DBusInterface iface;
 	
-	public DBusProperty(String name, Variant value, Permission permission, DBusInterface iface) {
+	public DBusProperty(String name, String type, Permission permission, DBusInterface iface) {
 		this.name = name;
-		this.value = value;
+		this.type = type;
 		this.permission = permission;
 		this.iface = iface;
 	}
 	
 	public String getName() { return name; }
-	public Variant getValue() { return value; }
+	public String getType() { return type; }
 	public Permission getPermission() { return permission; }
 	public DBusInterface getInterface() { return iface; }
 }

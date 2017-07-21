@@ -20,7 +20,11 @@ import org.xml.sax.SAXException;
 import de.soctronic.DBusViewer.DBusInterface;
 import de.soctronic.DBusViewer.DBusMethod;
 import de.soctronic.DBusViewer.DBusMethodArgument;
+import de.soctronic.DBusViewer.DBusProperty;
+import de.soctronic.DBusViewer.DBusSignal;
+import de.soctronic.DBusViewer.DBusSignalArgument;
 import de.soctronic.DBusViewer.Direction;
+import de.soctronic.DBusViewer.Permission;
 
 public class XMLParser {
 
@@ -100,6 +104,51 @@ public class XMLParser {
 		return methods;
 	}
 	
+	public List<DBusSignal> getSignals(String iface, DBusInterface dbusInterface) {
+		List<String> signalNames = getElementsOfInterface(iface, "signal", "name");
+		
+		List<DBusSignal> signals = new ArrayList<DBusSignal>();
+		for (String signalName : signalNames) {
+			List<DBusSignalArgument> signalArguments = getSignalArguments(iface, signalName);
+			DBusSignal signal = new DBusSignal(signalName, signalArguments, dbusInterface);
+			signals.add(signal);
+		}
+		
+		return signals;
+	}
+	
+	public List<DBusProperty> getProperties(String iface, DBusInterface dbusInterface) {
+		List<String> propertyNames = getElementsOfInterface(iface, "property", "name");
+		List<String> propertyTypes = getElementsOfInterface(iface, "property", "type");
+		List<String> propertyAccesses = getElementsOfInterface(iface, "property", "access");
+		
+		List<DBusProperty> properties = new ArrayList<DBusProperty>();
+		for (int i = 0; i < propertyNames.size(); i++) {
+			Permission access;
+			switch (propertyAccesses.get(i)) {
+			case "read":
+				access = Permission.READ;
+				break;
+			case "write":
+				access = Permission.WRITE;
+				break;
+			case "readwrite":
+				access = Permission.READ_WRITE;
+				break;
+			default:
+				access = Permission.INVALID;
+				break;
+			}
+			
+			System.out.println("Property[" + propertyNames.get(i) + "]{" + propertyTypes.get(i) + "}{" + access.toString() + "}{" + propertyAccesses.get(i) + "}");
+			
+			DBusProperty property = new DBusProperty(propertyNames.get(i), propertyTypes.get(i), access, dbusInterface);
+			properties.add(property);
+		}
+		
+		return properties;
+	}
+	
 	private List<String> getElementsOfInterface(String iface, String elementName) {
 		return getElementsOfInterface(iface, elementName, "name");
 	}
@@ -114,7 +163,7 @@ public class XMLParser {
 				NodeList elementNodeList = element.getElementsByTagName(elementName);
 				for (int j = 0; j < elementNodeList.getLength(); j++) {
 					Element elementMethod = (Element) elementNodeList.item(j);
-					elements.add(elementMethod.getAttribute("name"));
+					elements.add(elementMethod.getAttribute(attributeName));
 				}
 			}
 		}
@@ -145,6 +194,38 @@ public class XMLParser {
 							System.out.println("method[" + method + "] -> arg{" + name + "}{" + type + "}{" + strDirection + "}");
 							
 							DBusMethodArgument argument = new DBusMethodArgument(name, type, direction);
+							arguments.add(argument);					
+						}
+					}
+				}
+			}
+		}
+		
+		return arguments;
+	}
+	
+	private List<DBusSignalArgument> getSignalArguments(String iface, String signal) {
+		List<DBusSignalArgument> arguments = new ArrayList<DBusSignalArgument>();
+		
+		NodeList interfaceNodeList = document.getElementsByTagName("interface");
+		for (int i = 0; i < interfaceNodeList.getLength(); i++) {
+			Element element = (Element) interfaceNodeList.item(i);
+			if (element.getAttribute("name").equals(iface)) {
+				NodeList elementNodeList = element.getElementsByTagName("signal");
+				for (int j = 0; j < elementNodeList.getLength(); j++) {
+					Element methodElement = (Element) elementNodeList.item(j);
+					if (methodElement.getAttribute("name").equals(signal)) {
+						NodeList argNodeList = methodElement.getElementsByTagName("arg");
+						for (int k = 0; k < argNodeList.getLength(); k++) {
+							Element argElement = (Element) argNodeList.item(k);
+							
+							
+							String name = argElement.getAttribute("name");
+							String type = argElement.getAttribute("type");
+							
+							System.out.println("signal[" + signal + "] -> arg{" + name + "}{" + type + "}");
+							
+							DBusSignalArgument argument = new DBusSignalArgument(name, type);
 							arguments.add(argument);					
 						}
 					}
