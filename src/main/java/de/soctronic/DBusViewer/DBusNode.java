@@ -44,6 +44,7 @@ public class DBusNode {
 	
 	public void addNode(DBusNode node) {
 		this.nodes.put(node.getObjectPath(), node);
+		this.dbusTree.addNode(node);
 	}
 	
 	public DBusTree getDBusTree() {
