@@ -21,8 +21,11 @@ public class InterfaceSelectHandler implements Runnable {
 	
 	@Override
 	public void run() {
-		List<String> data = table.getTableModel().getRow(table.getSelectedRow());
-		window.onInterfaceSelect(node, data.get(0));	
+		if (!table.getTableModel().getRows().isEmpty()) {
+			List<String> data = table.getTableModel().getRow(table.getSelectedRow());
+			window.onInterfaceSelect(node, data.get(0));
+		}
+		else window.onInterfaceSelect(node, "invalid");
 	}
 
 }

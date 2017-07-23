@@ -7,9 +7,9 @@ import com.googlecode.lanterna.gui2.table.Table;
 public class BusnameSelectHandler implements Runnable {
 	
 	private MainWindow window;
-	private Table table;
+	private Table<String> table;
 	
-	public BusnameSelectHandler(MainWindow window, Table table) {
+	public BusnameSelectHandler(MainWindow window, Table<String> table) {
 		this.window = window;
 		this.table = table;
 	}
