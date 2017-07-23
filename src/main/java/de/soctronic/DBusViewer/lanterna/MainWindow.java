@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.types.DBusMapType;
 import org.freedesktop.dbus.types.DBusStructType;
 
 import com.googlecode.lanterna.gui2.BasicWindow;
@@ -109,26 +110,25 @@ public class MainWindow extends BasicWindow {
 		}
 
 		interfaceTable.setSelectAction(
-				new InterfaceSelectHandler(this, dbusTree, dbusTree.getNodes().get(node), interfaceTable));
+				new InterfaceSelectHandler(this, dbusTree.getNodes().get(node), interfaceTable));
 
 		//treePanel.addComponent(interfaceTable.withBorder(Borders.singleLine()));
 		treePanel.addComponent(interfaceTable);
 		interfaceTable.takeFocus();
 	}
 
-	public void onInterfaceSelect(DBusTree dbusTree, DBusNode node, String interfaceName) {
+	public void onInterfaceSelect(DBusNode node, String interfaceName) {
 		treePanel.removeAllComponents();
 
-		Table<String> table = new Table<String>("DBus Detail View ## [ " + dbusTree.getBusName() + " --> "
-				+ node.getObjectPath() + " --> " + interfaceName);
-
 		// add methods
+		Table<String> methodTable = new Table<String>("Methods");
+		
 
 		// add signals
 
 		// add properties
 
-		treePanel.addComponent(table);
-		table.takeFocus();
+		//treePanel.addComponent(table);
+		//table.takeFocus();
 	}
 }

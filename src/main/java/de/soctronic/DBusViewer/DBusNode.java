@@ -8,10 +8,14 @@ public class DBusNode {
 	private Map<String, DBusInterface> interfaces;
 	private Map<String, DBusNode> nodes;
 	
-	public DBusNode(String objectPath ) {
+	private DBusTree dbusTree;
+	
+	public DBusNode(String objectPath, DBusTree dbusTree) {
 		this.objectPath = objectPath;
 		this.interfaces = new HashMap<String, DBusInterface>();
 		this.nodes = new HashMap<String, DBusNode>();
+		
+		this.dbusTree = dbusTree;
 		
 		System.out.println("created new node[" + objectPath + "]");
 	}
@@ -40,5 +44,9 @@ public class DBusNode {
 	
 	public void addNode(DBusNode node) {
 		this.nodes.put(node.getObjectPath(), node);
+	}
+	
+	public DBusTree getDBusTree() {
+		return this.dbusTree;
 	}
 }

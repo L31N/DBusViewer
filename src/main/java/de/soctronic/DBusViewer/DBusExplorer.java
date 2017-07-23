@@ -40,30 +40,30 @@ public class DBusExplorer {
 		DBusTree dbusTree = new DBusTree(busname);
 
 		// recursive procedure
-		dbusTree.addNode(discoverNode(busname, "/"));
+		dbusTree.addNode(discoverNode(dbusTree, "/"));
 
 		return dbusTree;
 
 	}
 
-	private DBusNode discoverNode(String busname, String objectPath) {
+	private DBusNode discoverNode(DBusTree dbusTree, String objectPath) {
 		List<String> ifaces = new ArrayList<String>();
 		List<String> childs = new ArrayList<String>();
 
-		String introspectionResult = introspect(busname, objectPath);
+		String introspectionResult = introspect(dbusTree.getBusName(), objectPath);
 		XMLParser xmlParser = new XMLParser(introspectionResult);
 		ifaces = xmlParser.getInterfaces();
 		childs = xmlParser.getNodes();
 
-		DBusNode node = new DBusNode(objectPath);
+		DBusNode node = new DBusNode(objectPath, dbusTree);
 		for (String iface : ifaces) {
-			node.addInterface(discoverInterface(busname, iface, node));
+			node.addInterface(discoverInterface(dbusTree.getBusName(), iface, node));
 		}
 
 		for (String child : childs) {
 			String path = objectPath + "/" + child;
 			path = path.replaceAll("//", "/");
-			node.addNode(discoverNode(busname, path));
+			node.addNode(discoverNode(dbusTree, path));
 		}
 
 		return node;
