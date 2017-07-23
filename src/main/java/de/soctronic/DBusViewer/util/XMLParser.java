@@ -25,6 +25,7 @@ import de.soctronic.DBusViewer.DBusSignal;
 import de.soctronic.DBusViewer.DBusSignalArgument;
 import de.soctronic.DBusViewer.Direction;
 import de.soctronic.DBusViewer.Permission;
+import de.soctronic.DBusViewer.DBus.DBusType;
 
 public class XMLParser {
 
@@ -119,8 +120,13 @@ public class XMLParser {
 	
 	public List<DBusProperty> getProperties(String iface, DBusInterface dbusInterface) {
 		List<String> propertyNames = getElementsOfInterface(iface, "property", "name");
-		List<String> propertyTypes = getElementsOfInterface(iface, "property", "type");
 		List<String> propertyAccesses = getElementsOfInterface(iface, "property", "access");
+		
+		List<String> propertyTypeStrings = getElementsOfInterface(iface, "property", "type");
+		List<DBusType> propertyTypes = new ArrayList<DBusType>();
+		for (String typeString : propertyTypeStrings) {
+			propertyTypes.add(DBusType.createFromDBusIdentifier(typeString));
+		}
 		
 		List<DBusProperty> properties = new ArrayList<DBusProperty>();
 		for (int i = 0; i < propertyNames.size(); i++) {
@@ -187,7 +193,7 @@ public class XMLParser {
 							
 							
 							String name = argElement.getAttribute("name");
-							String type = argElement.getAttribute("type");
+							DBusType type = DBusType.createFromDBusIdentifier(argElement.getAttribute("type"));
 							String strDirection = argElement.getAttribute("direction");
 							Direction direction = strDirection.equals("in") ? Direction.IN : Direction.OUT;
 							
@@ -221,7 +227,7 @@ public class XMLParser {
 							
 							
 							String name = argElement.getAttribute("name");
-							String type = argElement.getAttribute("type");
+							DBusType type = DBusType.createFromDBusIdentifier(argElement.getAttribute("type"));
 							
 							System.out.println("signal[" + signal + "] -> arg{" + name + "}{" + type + "}");
 							

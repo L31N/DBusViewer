@@ -173,9 +173,9 @@ public class MainWindow extends BasicWindow {
 				str = str.substring(0, str.length() - 3);
 			str += ")";
 			if (retval != null) {
-				str += " --> (" + retval.getType() + " " + retval.getName() + ")";
+				str += " --> (" + retval.getType().toString() + " " + retval.getName() + ")";
 				if (retval.getName() == "") {
-					str = str.substring(0, str.length() - 3);
+					str = str.substring(0, str.length() - 2);
 					str += ")";
 				}
 			} else {
@@ -185,35 +185,36 @@ public class MainWindow extends BasicWindow {
 			methodTable.getTableModel().addRow(str);
 		}
 
-		// add signals
+		// add signals ------------------------------------------------------------------------
 		Table<String> signalTable = new Table<String>("Signals");
 		List<DBusSignal> signals = new ArrayList<DBusSignal>(node.getInterfaces().get(interfaceName).getSignals().values());
+		
 		for (DBusSignal signal : signals) {
 			String str = signal.getName() + "(";
 			boolean removeDelimiter = false;
 			int argIndex = 0;
 			for (DBusSignalArgument arg : signal.getArguments()) {
 				if (arg.getName() != "") {
-					str += arg.getType() + " " + arg.getName() + ", ";
+					str += arg.getType().toString() + " " + arg.getName() + ", ";
 				} else {
-					str += arg.getType() + " arg" + argIndex + ", ";
+					str += arg.getType().toString() + " arg" + argIndex + ", ";
 					argIndex ++;
 				}
 				removeDelimiter = true;
 			}
 			if (removeDelimiter) {
-				str = str.substring(str.length() - 3);
+				str = str.substring(0, str.length() - 2);
 			}
 			str += ")";
 			
 			signalTable.getTableModel().addRow(str);
 		}
 
-		// add properties
+		// add properties --------------------------------------------------------------------------
 		Table<String> propertyTable = new Table<String>("Properties");
 		List<DBusProperty> properties = new ArrayList<DBusProperty>(node.getInterfaces().get(interfaceName).getProperties().values());
 		for (DBusProperty property : properties) {
-			String str = property.getType() + " " + property.getName() + " (" + property.getPermission().toString() + ")";
+			String str = property.getType().toString() + " " + property.getName() + " (" + property.getPermission().toString() + ")";
 			propertyTable.getTableModel().addRow(str);
  		}
 

@@ -1,13 +1,15 @@
 package de.soctronic.DBusViewer;
 
+import de.soctronic.DBusViewer.DBus.DBusType;
+
 public class DBusProperty {
 	private String name;
-	private String type;
+	private DBusType type;
 	private Permission permission;
 	
 	private DBusInterface iface;
 	
-	public DBusProperty(String name, String type, Permission permission, DBusInterface iface) {
+	public DBusProperty(String name, DBusType type, Permission permission, DBusInterface iface) {
 		this.name = name;
 		this.type = type;
 		this.permission = permission;
@@ -15,7 +17,7 @@ public class DBusProperty {
 	}
 	
 	public String getName() { return name; }
-	public String getType() { return type; }
+	public DBusType getType() { return type; }
 	public Permission getPermission() { return permission; }
 	public DBusInterface getInterface() { return iface; }
 }
