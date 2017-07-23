@@ -1,20 +1,26 @@
 package de.soctronic.DBusViewer.lanterna;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.border.LineBorder;
 
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.types.DBusMapType;
 import org.freedesktop.dbus.types.DBusStructType;
 
+import com.googlecode.lanterna.graphics.ThemeStyle;
 import com.googlecode.lanterna.gui2.BasicWindow;
+import com.googlecode.lanterna.gui2.Border;
 import com.googlecode.lanterna.gui2.Borders;
 import com.googlecode.lanterna.gui2.Button;
 import com.googlecode.lanterna.gui2.ComboBox;
 import com.googlecode.lanterna.gui2.Direction;
+import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.LinearLayout;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.table.Table;
@@ -26,6 +32,9 @@ import de.soctronic.DBusViewer.DBusInterface;
 import de.soctronic.DBusViewer.DBusMethod;
 import de.soctronic.DBusViewer.DBusMethodArgument;
 import de.soctronic.DBusViewer.DBusNode;
+import de.soctronic.DBusViewer.DBusProperty;
+import de.soctronic.DBusViewer.DBusSignal;
+import de.soctronic.DBusViewer.DBusSignalArgument;
 import de.soctronic.DBusViewer.DBusTree;
 
 public class MainWindow extends BasicWindow {
@@ -135,11 +144,14 @@ public class MainWindow extends BasicWindow {
 
 	public void onInterfaceSelect(DBusNode node, String interfaceName) {
 		treePanel.removeAllComponents();
-
-		// add methods
+		
 		// TODO: add lable
+		Label interfaceLabel = new Label("DBus Detail View ## [ " + interfaceName + " ]");
+		treePanel.addComponent(interfaceLabel);
+		
+		// add methods -----------------------------------------------------------------
 		Table<String> methodTable = new Table<String>("Methods");
-		List<DBusMethod> methods = new ArrayList(node.getInterfaces().get(interfaceName).getMethods().values());
+		List<DBusMethod> methods = new ArrayList<DBusMethod>(node.getInterfaces().get(interfaceName).getMethods().values());
 		for (DBusMethod method : methods) {
 			String str = method.getName() + " (";
 			boolean removeDelimiter = false;
@@ -174,10 +186,41 @@ public class MainWindow extends BasicWindow {
 		}
 
 		// add signals
+		Table<String> signalTable = new Table<String>("Signals");
+		List<DBusSignal> signals = new ArrayList<DBusSignal>(node.getInterfaces().get(interfaceName).getSignals().values());
+		for (DBusSignal signal : signals) {
+			String str = signal.getName() + "(";
+			boolean removeDelimiter = false;
+			int argIndex = 0;
+			for (DBusSignalArgument arg : signal.getArguments()) {
+				if (arg.getName() != "") {
+					str += arg.getType() + " " + arg.getName() + ", ";
+				} else {
+					str += arg.getType() + " arg" + argIndex + ", ";
+					argIndex ++;
+				}
+				removeDelimiter = true;
+			}
+			if (removeDelimiter) {
+				str = str.substring(str.length() - 3);
+			}
+			str += ")";
+			
+			signalTable.getTableModel().addRow(str);
+		}
 
 		// add properties
+		Table<String> propertyTable = new Table<String>("Properties");
+		List<DBusProperty> properties = new ArrayList<DBusProperty>(node.getInterfaces().get(interfaceName).getProperties().values());
+		for (DBusProperty property : properties) {
+			String str = property.getType() + " " + property.getName() + " (" + property.getPermission().toString() + ")";
+			propertyTable.getTableModel().addRow(str);
+ 		}
 
 		treePanel.addComponent(methodTable);
+		treePanel.addComponent(signalTable);
+		treePanel.addComponent(propertyTable);
+		
 		methodTable.takeFocus();
 	}
 }
