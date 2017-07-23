@@ -1,5 +1,6 @@
 package de.soctronic.DBusViewer.lanterna;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.freedesktop.dbus.DBusConnection;
@@ -14,13 +15,18 @@ import com.googlecode.lanterna.gui2.Direction;
 import com.googlecode.lanterna.gui2.LinearLayout;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.table.Table;
+import com.googlecode.lanterna.screen.Screen;
 
 import de.soctronic.DBusViewer.DBusExplorer;
 import de.soctronic.DBusViewer.DBusTree;
 
 public class MainWindow extends BasicWindow {
-
+	
 	private DBusExplorer dbusExplorer;
+	
+	private Panel mainPanel;
+	private Panel controlPanel;
+	private Panel treePanel;
 
 	public MainWindow() {
 		super("DBusViewer 1.0.0-SNAPSHOT");
@@ -37,10 +43,11 @@ public class MainWindow extends BasicWindow {
 	}
 
 	private void displayBusNames() {
-		Panel mainPanel = new Panel();
-		mainPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-
-		Panel tablePanel = new Panel();
+		mainPanel = new Panel();
+		controlPanel = new Panel();
+		treePanel = new Panel();
+		
+		mainPanel.setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
 
 		Button exitButton = new Button("Exit", new Runnable() {
 			public void run() {
@@ -49,7 +56,7 @@ public class MainWindow extends BasicWindow {
 		});
 
 		// table = new Table<String>("available bus names");
-		final Table table = new Table<String>("Available Bus Names");
+		final Table<String> table = new Table<String>("Available Bus Names");
 
 		List<String> busnames = dbusExplorer.discoverBusNames();
 		for (String name : busnames) {
@@ -57,11 +64,13 @@ public class MainWindow extends BasicWindow {
 		}
 
 		table.setSelectAction(new BusnameSelectHandler(this, table));
+		
+		controlPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+		controlPanel.addComponent(table.withBorder(Borders.doubleLine()));
+		controlPanel.addComponent(exitButton);
 
-		tablePanel.addComponent(table);
-
-		mainPanel.addComponent(table.withBorder(Borders.doubleLine()));
-		mainPanel.addComponent(exitButton);
+		mainPanel.addComponent(controlPanel);
+		mainPanel.addComponent(treePanel);
 
 		this.setComponent(mainPanel);
 	}
@@ -72,6 +81,21 @@ public class MainWindow extends BasicWindow {
 	}
 	
 	private void displayTree(DBusTree dbusTree) {
+		treePanel.removeAllComponents();
+		Table<String> nodeTable = new Table<String>("DBus Node View ## [ " + dbusTree.getBusName() + " ]");
+		List<String> nodeNames = new ArrayList<String>(dbusTree.getNodes().keySet());
+		for (String nodeName : nodeNames) {
+			nodeTable.getTableModel().addRow(nodeName);
+		}
+		
+		nodeTable.setSelectAction(new NodeSelectHandler(this, dbusTree, nodeTable));
+		
+		treePanel.addComponent(nodeTable.withBorder(Borders.singleLine()));
+	}
+
+	public void onNodeSelect(DBusTree dbusTree, String node) {
+		treePanel.removeAllComponents();
+		Table<String> interfaceTable = new Table<String>("DBus Interface View ## [ " + node + " ]");
 		
 	}
 }

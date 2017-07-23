@@ -24,4 +24,8 @@ public class DBusTree {
 	public void addNode(DBusNode node) {
 		nodes.put(node.getObjectPath(), node);
 	}
+	
+	public String getBusName() {
+		return busname;
+	}
 }
